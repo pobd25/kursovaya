@@ -1,0 +1,2 @@
+build: "."
+run: "python bot_front.py"
