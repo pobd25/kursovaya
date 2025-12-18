@@ -1,0 +1,11 @@
+#конфиденциальные данные
+.env
+.env.local
+.env.*
+*.env
+secrets.txt
+passwords.txt
+config.py
+search_history.json
+__pycache__/
+*.pyc
