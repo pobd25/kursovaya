@@ -4,18 +4,16 @@ from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQu
 import sqlite3
 import json
 
-
+# проверяем существует токен или нет 
 def main():
     if not TOKEN:
         print("токен не найден")
         return
 
-    # === ДОБАВЬТЕ ЭТОТ БЛОК ===
     import os
-    # Проверяем, существует ли файл базы данных
+    # проверяем, существует ли файл базы данных
     if not os.path.exists("chefbot.db"):
-        print("ОШИБКА: Файл базы данных chefbot.db не найден!")
-        print("Убедитесь, что файл находится в той же папке, что и бот.")
+        print("Файл базы данных не найден")
         return
 
 # импортируем токен из файла config.py
@@ -25,7 +23,7 @@ except ImportError:
     print("ошибочка, нет токена")
     TOKEN = None
 
-# импорт бэка
+# импорт функций бэка
 from bot_back import (
     SearchHistory,
     search_in_database,
@@ -36,13 +34,13 @@ from bot_back import (
 )
 
 
-# создаём кнопку для поиска рецептов
+# главное меню, создаём кнопку для поиска рецептов на старте 
 def create_main_menu_keyboard():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🔍 Найти рецепт", callback_data="new_search")]
     ])
 
-# создаём клавиатуру из кнопочек, менюшка
+# создаём клавиатуру из кнопочек,основная менюшка из 4х кнопок 
 def create_new_search_keyboard():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🔍 Начать новый поиск", callback_data="start_search")],
@@ -51,7 +49,7 @@ def create_new_search_keyboard():
         [InlineKeyboardButton("🏠 В главное меню", callback_data="main_menu")]
     ])
 
-# кнопки под рецептами
+# кнопки под рецептами, навигация после просмотра рецепта 
 def create_recipe_keyboard(recipe_id):
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🔍 Найти новый рецепт", callback_data="new_search")],
@@ -59,7 +57,7 @@ def create_recipe_keyboard(recipe_id):
     ])
 
 
-# команда старта
+# команда старта, приветсвенное сообщение с инструкцией 
 # обработка для большого количества пользователей
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -70,7 +68,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown"
     )
 
-# обработка текста от пользователя
+# обработка ввода продуктов 
+# показ рецепта 
 async def handle_ingredients(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text.strip()
     ingredients = [line.strip() for line in user_text.split('\n') if line.strip()]
@@ -132,7 +131,7 @@ async def handle_ingredients(update: Update, context: ContextTypes.DEFAULT_TYPE)
         parse_mode="Markdown"
     )
 
-# обработка нажатия на рецепт
+# показ рецепта 
 async def handle_recipe_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -180,7 +179,7 @@ async def handle_recipe_button(update: Update, context: ContextTypes.DEFAULT_TYP
         parse_mode="Markdown"
     )
 
-# показ менюшки для нового поиска
+# показ менюшки с 4 кнопками 
 async def show_new_search_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -213,7 +212,7 @@ async def start_new_search(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown"
     )
 
-
+# кнопка помощи 
 async def help_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -238,7 +237,7 @@ async def help_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown"
     )
 
-# показ истории рецептов
+# кнопка истории рецептов 
 async def show_search_history(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -340,7 +339,7 @@ def main():
 
     app = Application.builder().token(TOKEN).build()
 
-    # обработка команд
+    # обработка команд 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_menu))
     app.add_handler(CommandHandler("menu", show_new_search_menu))
@@ -363,4 +362,5 @@ def main():
     app.run_polling()
 
 if __name__ == "__main__":
+
     main()
