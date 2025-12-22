@@ -69,7 +69,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # обработка ввода продуктов 
-# показ рецепта 
 async def handle_ingredients(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text.strip()
     ingredients = [line.strip() for line in user_text.split('\n') if line.strip()]
@@ -89,7 +88,6 @@ async def handle_ingredients(update: Update, context: ContextTypes.DEFAULT_TYPE)
         if found_ingredients:
             similar_recipes = get_similar_recipes(found_ingredients)
             response = f"❌ *Не нашёл рецептов*\n\n✅ *Найдены:* {', '.join(found_ingredients)}\n\n"
-# кнопочки с похожими рецептами
             keyboard = []
             if similar_recipes:
                 response += f"🍳 *Похожие рецепты:*\n"
@@ -115,11 +113,10 @@ async def handle_ingredients(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
         return
 
-    # если рецепты найдены, кнопочки с названиями
+    # если рецепты найдены 
     keyboard = []
     for recipe_id, title in recipes:
         keyboard.append([InlineKeyboardButton(title, callback_data=f"recipe_{recipe_id}")])
-    #кнопка меню в отдельной строке
     keyboard.append([InlineKeyboardButton("📋 Меню", callback_data="new_search")])
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -131,7 +128,7 @@ async def handle_ingredients(update: Update, context: ContextTypes.DEFAULT_TYPE)
         parse_mode="Markdown"
     )
 
-# показ рецепта 
+# показ рецепта при нажатии на кнопку 
 async def handle_recipe_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -172,7 +169,6 @@ async def handle_recipe_button(update: Update, context: ContextTypes.DEFAULT_TYP
 
 Приятного аппетита! 😊
 """
-# редактируем сообщение с кнопками
     await query.edit_message_text(
         recipe_text + "\n\n *Что дальше?*",
         reply_markup=create_recipe_keyboard(recipe_id),
@@ -196,7 +192,7 @@ async def show_new_search_menu(update: Update, context: ContextTypes.DEFAULT_TYP
         parse_mode="Markdown"
     )
 
-# новый поиск
+#кнопка новый поиск
 async def start_new_search(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -237,7 +233,7 @@ async def help_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown"
     )
 
-# кнопка истории рецептов 
+# вкладка истории рецептов 
 async def show_search_history(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -356,7 +352,6 @@ def main():
     app.add_handler(CallbackQueryHandler(show_search_history, pattern="^show_history$"))
     app.add_handler(CallbackQueryHandler(clear_history, pattern="^clear_history$"))
     app.add_handler(CallbackQueryHandler(main_menu, pattern="^main_menu$"))
-
     print("все работает")
 
     app.run_polling()
@@ -364,3 +359,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
